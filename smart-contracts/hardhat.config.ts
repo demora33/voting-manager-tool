@@ -4,20 +4,20 @@ import '@openzeppelin/hardhat-upgrades';
 
 require('dotenv').config();
 const privateKey = process.env.PRIVATE_KEY;
-const apiKey = process.env.API_KEY;
+const rpcUrl = process.env.RPC_URL;
 
 
+if (!privateKey || !rpcUrl) {
+  throw new Error('Please set your PRIVATE_KEY and RPC_URL in a .env file');
+}
 const config: HardhatUserConfig = {
   solidity: "0.8.20",
   networks: {
-    optimism: {
-      url: 'https://kovan.optimism.io',
-      accounts: [],
-      gasPrice: 15000000,
-    },
-    goerli: {
-      url: 'https://goerli.infura.io/v3/' + apiKey,
-      accounts: [],
+    hardhat: {},
+    'optimism-sepolia': {
+      url: rpcUrl,
+      accounts: [privateKey],
+      chainId: 11155420,
     }
   },
 };

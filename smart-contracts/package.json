@@ -1,5 +1,8 @@
 {
   "name": "hardhat-project",
+  "scripts": {
+    "deploy": "npx hardhat run --network optimism-sepolia scripts/deploy.ts "
+  },
   "devDependencies": {
     "@nomicfoundation/hardhat-network-helpers": "^1.0.10",
     "@nomicfoundation/hardhat-toolbox": "^4.0.0",
@@ -7,6 +10,7 @@
   },
   "dependencies": {
     "@openzeppelin/contracts-upgradeable": "^5.0.1",
-    "@openzeppelin/hardhat-upgrades": "^3.0.3"
+    "@openzeppelin/hardhat-upgrades": "^3.0.3",
+    "dotenv": "^16.4.4"
   }
 }
