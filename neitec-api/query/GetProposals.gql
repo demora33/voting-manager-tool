@@ -1,0 +1,9 @@
+query GetProposals {
+  votingProposalCreateds(first: 10, where: {}, orderBy: conclusionDate) {
+    creator
+    creationDate
+    conclusionDate
+    proposalHash
+    votingProposalId
+  }
+}
