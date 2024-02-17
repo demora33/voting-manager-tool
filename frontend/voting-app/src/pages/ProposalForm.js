@@ -1,12 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
+import { VotingContext } from '../context/voter'; 
+// import { createVotingProposal } from '../components/VotingManager';
 
 function CreateProposalForm() {
   const [message, setMessage] = useState('');
   const [endDate, setEndDate] = useState('');
+  const { createVotingProposal } = useContext(VotingContext);
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    // Aquí puedes manejar la creación de la propuesta
+    createVotingProposal(message, endDate);
   };
 
   return (

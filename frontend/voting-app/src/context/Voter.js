@@ -1,34 +1,30 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { ethers } from "ethers";
 import axios from "axios";
-
-//INTERNAL IMPORT
-import { VotingAddress, VotingAddressABI } from "./constants";
-
-// const fetchContract = (signerOrProvider) =>
-//   new ethers.Contract(VotingAddress, VotingAddressABI, signerOrProvider);
+import { VotingAddress, VotingAddressABI } from "./config.js";
 
 export const VotingContext = React.createContext();
 
 export const VotingProvider = ({ children }) => {
   const [currentAccount, setCurrentAccount] = useState(null);
+  const [contract, setContract] = useState(null);
   const [error, setError] = useState("");
+ 
+  const fetchContract = (signer) => {
+    if (contract) return contract;
 
-  // const [candidateLength, setCandidateLength] = useState("");
-  // const pushCandidate = [];
-  // const candidateIndex = [];
-  // const [candidateArray, setCandidateArray] = useState(pushCandidate);
-  // =========================================================
-  //---ERROR Message
-  // const higestVote = [];
+    const contractAddress = VotingAddress;
+    const contractABI = [VotingAddressABI];
 
-  // const pushVoter = [];
-  // const [voterArray, setVoterArray] = useState(pushVoter);
-  // const [voterLength, setVoterLength] = useState("");
-  // const [voterAddress, setVoterAddress] = useState([]);
+    const votingManager = new ethers.Contract(
+      contractAddress,
+      contractABI,
+      signer
+    );
+    if (votingManager) setContract(votingManager);
+    return votingManager;
+  };
 
-  console.log("VotingProvider");
-  /// CONNECTING METAMASK
   const checkIfWalletIsConnected = async () => {
     if (!window.ethereum) return setError("Please Install MetaMask");
 
@@ -36,8 +32,6 @@ export const VotingProvider = ({ children }) => {
 
     if (account.length) {
       setCurrentAccount(account);
-      // getAllVoterData();
-      // getNewCandidate();
     } else {
       setError("Please Install MetaMask & Connect, Reload");
     }
@@ -46,7 +40,9 @@ export const VotingProvider = ({ children }) => {
   const connectWallet = async () => {
     if (window.ethereum) {
       try {
-        const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+        const accounts = await window.ethereum.request({
+          method: "eth_requestAccounts",
+        });
         setCurrentAccount(accounts[0]);
       } catch (error) {
         setError("Failed to connect wallet");
@@ -56,23 +52,32 @@ export const VotingProvider = ({ children }) => {
     }
   };
 
-  // =============================================
-  //CREATE VOTER----------------------
-  const createVoter = async (formInput, fileUrl) => {
+  const createVotingProposal = async (proposalMessage, endDate) => {
     try {
-      // const { name, address, position } = formInput;
+      const contract = fetchContract(window.ethereum);
+      // const provider = new ethers.Web3Provider(window.ethereum);
+      // console.log(provider);
+      // const providerSigner = provider.getSigner();
+      // console.log(providerSigner);
+      // const proposalHash = ethers.utils.keccak256(ethers.utils.toUtf8Bytes(proposalMessage));
 
-      // if (!name || !address || !position)
-      //   return console.log("Input Data is missing");
+      console.log(proposalMessage, endDate);
+      // console.log(proposalHash);
+      console.log(contract);
 
-      // const provider = new ethers.providers.Web3Provider(connection);
-      // const signer = provider.getSigner();
-      // const contract = fetchContract(signer);
-
-      // const voter = await contract.voterRight(address, name, url, fileUrl);
-      // voter.wait();
-
-      // router.push("/voterList");
+      if (!contract) {
+        console.log("Contract not initialized");
+        return;
+      }
+  
+      // Asegúrate de que la función que estás llamando existe en tu contrato
+      await contract.nextVotingProposalId();
+      // console.log(owner);
+  
+      // Espera a que la transacción sea minada
+      // await tx.wait();
+  
+      console.log("Proposal created successfully");
     } catch (error) {
       console.log(error);
     }
@@ -199,20 +204,10 @@ export const VotingProvider = ({ children }) => {
         currentAccount,
         checkIfWalletIsConnected,
         connectWallet,
-        // createVoter,
-        // setCandidate,
-        // getNewCandidate,
-        // giveVote,
-        // getAllVoterData,
-        // pushCandidate,
-        // candidateArray,
-        // uploadToIPFS,
-        // uploadToIPFSCandidate,
-        // voterArray,
-        // giveVote,
+        createVotingProposal,
+        fetchContract,
+        contract,
         error,
-        // candidateLength,
-        // voterLength,
       }}
     >
       {children}

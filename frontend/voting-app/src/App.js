@@ -1,5 +1,5 @@
 import React, { useContext, useEffect } from "react";
-import { VotingContext, VotingProvider } from "./context/Voter";
+import { VotingContext, VotingProvider } from "./context/voter";
 import NavBar from "./components/NavBar/NavBar";
 import Countdown from "react-countdown";
 import Style from "./styles/index.module.css";
@@ -9,11 +9,13 @@ import CreateProposalForm from "./pages/ProposalForm";
 
 function MyApp({}) {
   const votingContext = useContext(VotingContext);
-  const { currentAccount, checkIfWalletIsConnected } = votingContext;
+  const { currentAccount, checkIfWalletIsConnected, fetchContract, contract } = votingContext;
+
   useEffect(() => {
-    // getNewCandidate();
     checkIfWalletIsConnected();
-    console.log(currentAccount);
+    if (window.ethereum) {
+      fetchContract(window.ethereum);
+    }
   }, []);
 
   return (
@@ -37,7 +39,6 @@ function MyApp({}) {
             style={{
               width: "45%",
               display: "flex",
-              // justifyContent: "center",
               alignItems: "center",
               flexDirection: "column",
               height: "100vh",

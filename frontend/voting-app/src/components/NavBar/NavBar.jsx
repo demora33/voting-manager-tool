@@ -2,7 +2,7 @@ import React, { useState, useContext } from "react";
 import { AiFillLock, AiFillUnlock } from "react-icons/ai";
 
 //INTERNAL IMPORT/
-import { VotingContext } from "../../context/Voter";
+import { VotingContext } from "../../context/voter";
 import Style from "./NavBar.module.css";
 import loding from "../../loding.gif";
 
