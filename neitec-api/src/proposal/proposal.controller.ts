@@ -2,7 +2,7 @@ import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import { ProposalService } from './proposal.service';
 
 @Controller('proposal')
-export class WatchlistController {
+export class ProposalController {
   constructor(
     private proposalService: ProposalService
   ) {}
