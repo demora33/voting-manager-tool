@@ -1,0 +1,6 @@
+query GetNewVotes($lastProposalId: BigInt!) {
+  voteCasteds(where: { votingProposalId_lt: $lastProposalId }) {
+    voteOption
+    votingProposalId
+  }
+}

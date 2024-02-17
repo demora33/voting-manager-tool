@@ -1116,6 +1116,12 @@ const merger = new(BareMerger as any)({
     get documents() {
       return [
       {
+        document: GetNewVotesDocument,
+        get rawSDL() {
+          return printWithCache(GetNewVotesDocument);
+        },
+        location: 'GetNewVotesDocument.graphql'
+      },{
         document: GetProposalsDocument,
         get rawSDL() {
           return printWithCache(GetProposalsDocument);
@@ -1165,6 +1171,13 @@ export function getBuiltGraphSDK<TGlobalContext = any, TOperationContext = any>(
   const sdkRequester$ = getBuiltGraphClient().then(({ sdkRequesterFactory }) => sdkRequesterFactory(globalContext));
   return getSdk<TOperationContext, TGlobalContext>((...args) => sdkRequester$.then(sdkRequester => sdkRequester(...args)));
 }
+export type GetNewVotesQueryVariables = Exact<{
+  lastProposalId: Scalars['BigInt'];
+}>;
+
+
+export type GetNewVotesQuery = { voteCasteds: Array<Pick<VoteCasted, 'voteOption' | 'votingProposalId'>> };
+
 export type GetProposalsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -1178,6 +1191,14 @@ export type GetProposalByIdQueryVariables = Exact<{
 export type GetProposalByIdQuery = { votingProposalCreateds: Array<Pick<VotingProposalCreated, 'creator' | 'creationDate' | 'conclusionDate' | 'proposalHash' | 'votingProposalId'>> };
 
 
+export const GetNewVotesDocument = gql`
+    query GetNewVotes($lastProposalId: BigInt!) {
+  voteCasteds(where: {votingProposalId_lt: $lastProposalId}) {
+    voteOption
+    votingProposalId
+  }
+}
+    ` as unknown as DocumentNode<GetNewVotesQuery, GetNewVotesQueryVariables>;
 export const GetProposalsDocument = gql`
     query GetProposals {
   votingProposalCreateds(first: 10, where: {}, orderBy: conclusionDate) {
@@ -1203,9 +1224,13 @@ export const GetProposalByIdDocument = gql`
 
 
 
+
 export type Requester<C = {}, E = unknown> = <R, V>(doc: DocumentNode, vars?: V, options?: C) => Promise<R> | AsyncIterable<R>
 export function getSdk<C, E>(requester: Requester<C, E>) {
   return {
+    GetNewVotes(variables: GetNewVotesQueryVariables, options?: C): Promise<GetNewVotesQuery> {
+      return requester<GetNewVotesQuery, GetNewVotesQueryVariables>(GetNewVotesDocument, variables, options) as Promise<GetNewVotesQuery>;
+    },
     GetProposals(variables?: GetProposalsQueryVariables, options?: C): Promise<GetProposalsQuery> {
       return requester<GetProposalsQuery, GetProposalsQueryVariables>(GetProposalsDocument, variables, options) as Promise<GetProposalsQuery>;
     },

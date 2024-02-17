@@ -7,3 +7,5 @@ sources:
 documents:
   - ./query/GetProposals.gql
   - ./query/GetProposalsById.gql
+  - ./query/GetNewVotes.gql
+

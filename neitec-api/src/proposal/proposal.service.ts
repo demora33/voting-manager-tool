@@ -16,6 +16,19 @@ export class ProposalService {
     return newProposal.save();
   }
 
+  async updateProposalVote(votingProposalId: number, voteOption: number): Promise<Proposal> {
+    let update;
+    if (voteOption === 0) {
+      update = { $inc: { yesVotes: 1 } };
+    } else if (voteOption === 1) {
+      update = { $inc: { noVotes: 1 } };
+    } else {
+      throw new Error('Invalid voteOption');
+    }
+  
+    return this.proposalModel.findOneAndUpdate({ votingProposalId }, update, { new: true }).exec();
+  }
+
   async findProposalById(id: number): Promise<Proposal | null> {
     return this.proposalModel.findOne({ votingProposalId: id }).exec();
   }
