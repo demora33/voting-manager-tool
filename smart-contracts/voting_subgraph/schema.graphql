@@ -1,0 +1,48 @@
+type Initialized @entity(immutable: true) {
+  id: Bytes!
+  version: BigInt! # uint64
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type OwnershipTransferred @entity(immutable: true) {
+  id: Bytes!
+  previousOwner: Bytes! # address
+  newOwner: Bytes! # address
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type VoteCasted @entity(immutable: true) {
+  id: Bytes!
+  votingProposalId: BigInt! # uint256
+  voteOption: Int! # uint8
+  voteCount: BigInt! # uint256
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type VotingConcluded @entity(immutable: true) {
+  id: Bytes!
+  votingProposalId: BigInt! # uint256
+  yesVotes: BigInt! # uint256
+  noVotes: BigInt! # uint256
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type VotingProposalCreated @entity(immutable: true) {
+  id: Bytes!
+  votingProposalId: BigInt! # uint256
+  creator: Bytes! # address
+  proposalHash: Bytes! # bytes32
+  creationDate: BigInt! # uint256
+  conclusionDate: BigInt! # uint256
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}

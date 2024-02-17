@@ -1,0 +1,8 @@
+{
+  "optimism-sepolia": {
+    "VotingManager": {
+      "address": "0xa78BC9891c7f9d2e6f801E1693CeFafff7FDD208",
+      "startBlock": 0
+    }
+  }
+}
