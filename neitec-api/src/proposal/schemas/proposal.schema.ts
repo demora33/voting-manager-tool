@@ -25,6 +25,11 @@ export class Proposal {
 
   @Prop({ default: 0 })
   noVotes: number;
+
+  @Prop({ default: false })
+  concluded: boolean;
+
+
 }
 
 export const ProposalSchema = SchemaFactory.createForClass(Proposal);

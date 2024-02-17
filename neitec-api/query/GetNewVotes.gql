@@ -1,6 +1,7 @@
-query GetNewVotes($lastProposalId: BigInt!) {
-  voteCasteds(where: { votingProposalId_lt: $lastProposalId }) {
+query GetNewVotes($latestUpdatedBlock: BigInt!) {
+  voteCasteds(where: { blockNumber_gt: $latestUpdatedBlock }) {
     voteOption
     votingProposalId
+    blockNumber
   }
 }

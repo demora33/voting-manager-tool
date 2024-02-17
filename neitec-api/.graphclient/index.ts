@@ -1172,41 +1172,43 @@ export function getBuiltGraphSDK<TGlobalContext = any, TOperationContext = any>(
   return getSdk<TOperationContext, TGlobalContext>((...args) => sdkRequester$.then(sdkRequester => sdkRequester(...args)));
 }
 export type GetNewVotesQueryVariables = Exact<{
-  lastProposalId: Scalars['BigInt'];
+  latestUpdatedBlock: Scalars['BigInt'];
 }>;
 
 
-export type GetNewVotesQuery = { voteCasteds: Array<Pick<VoteCasted, 'voteOption' | 'votingProposalId'>> };
+export type GetNewVotesQuery = { voteCasteds: Array<Pick<VoteCasted, 'voteOption' | 'votingProposalId' | 'blockNumber'>> };
 
 export type GetProposalsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetProposalsQuery = { votingProposalCreateds: Array<Pick<VotingProposalCreated, 'creator' | 'creationDate' | 'conclusionDate' | 'proposalHash' | 'votingProposalId'>> };
+export type GetProposalsQuery = { votingProposalCreateds: Array<Pick<VotingProposalCreated, 'creator' | 'creationDate' | 'conclusionDate' | 'proposalHash' | 'votingProposalId' | 'blockNumber'>> };
 
 export type GetProposalByIdQueryVariables = Exact<{
   votingProposalId: Scalars['BigInt'];
 }>;
 
 
-export type GetProposalByIdQuery = { votingProposalCreateds: Array<Pick<VotingProposalCreated, 'creator' | 'creationDate' | 'conclusionDate' | 'proposalHash' | 'votingProposalId'>> };
+export type GetProposalByIdQuery = { votingProposalCreateds: Array<Pick<VotingProposalCreated, 'creator' | 'creationDate' | 'conclusionDate' | 'proposalHash' | 'votingProposalId' | 'blockNumber'>> };
 
 
 export const GetNewVotesDocument = gql`
-    query GetNewVotes($lastProposalId: BigInt!) {
-  voteCasteds(where: {votingProposalId_lt: $lastProposalId}) {
+    query GetNewVotes($latestUpdatedBlock: BigInt!) {
+  voteCasteds(where: {blockNumber_gt: $latestUpdatedBlock}) {
     voteOption
     votingProposalId
+    blockNumber
   }
 }
     ` as unknown as DocumentNode<GetNewVotesQuery, GetNewVotesQueryVariables>;
 export const GetProposalsDocument = gql`
     query GetProposals {
-  votingProposalCreateds(first: 10, where: {}, orderBy: conclusionDate) {
+  votingProposalCreateds(first: 10, where: {}, orderBy: votingProposalId) {
     creator
     creationDate
     conclusionDate
     proposalHash
     votingProposalId
+    blockNumber
   }
 }
     ` as unknown as DocumentNode<GetProposalsQuery, GetProposalsQueryVariables>;
@@ -1218,6 +1220,7 @@ export const GetProposalByIdDocument = gql`
     conclusionDate
     proposalHash
     votingProposalId
+    blockNumber
   }
 }
     ` as unknown as DocumentNode<GetProposalByIdQuery, GetProposalByIdQueryVariables>;

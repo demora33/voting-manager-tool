@@ -16,12 +16,12 @@ export class ProposalService {
     return newProposal.save();
   }
 
-  async updateProposalVote(votingProposalId: number, voteOption: number): Promise<Proposal> {
+  async updateProposalVote(votingProposalId: number, voteOption: number, blockNumber: number): Promise<Proposal> {
     let update;
     if (voteOption === 0) {
-      update = { $inc: { yesVotes: 1 } };
+      update = { $inc: { yesVotes: 1 }, $set: { lastBlockUpdate: blockNumber }};
     } else if (voteOption === 1) {
-      update = { $inc: { noVotes: 1 } };
+      update = { $inc: { noVotes: 1 }, $set: { lastBlockUpdate: blockNumber }};
     } else {
       throw new Error('Invalid voteOption');
     }
@@ -35,5 +35,14 @@ export class ProposalService {
 
   async findAllProposals(): Promise<Proposal[]> {
     return this.proposalModel.find().exec();
+  }
+
+  async getSmallestLastBlockUpdated(): Promise<number> {
+    const proposal = await this.proposalModel.find({}, { lastBlockUpdate: 1 }).sort({ lastBlockUpdate: 1 }).limit(1).exec();
+    if (proposal.length > 0) {
+      return proposal[0].lastBlockUpdate;
+    } else {
+      throw new Error('No proposals found');
+    }
   }
 }

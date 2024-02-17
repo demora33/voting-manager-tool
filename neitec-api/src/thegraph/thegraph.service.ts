@@ -20,6 +20,8 @@ export class TheGraphService {
     this.logger.debug('Cron has started');
     console.log('------------------------------------');
 
+
+    // CHECK FOR NEW PROPOSALS
     const response = await GetProposals();
     const proposals = response.votingProposalCreateds;
 
@@ -31,17 +33,30 @@ export class TheGraphService {
       );
       console.log(`Proposal IDs: ${proposalIds}`);
       await this.checkforNewProposals(proposalIds);
-
-      const responseVotes = await GetNewVotes({ lastProposalId: proposals.length });
-      const votes = responseVotes.voteCasteds;
-
-      await this.updateVotes(votes);
-
-      console.log(votes)
-
     } else {
       console.log('No proposals found');
     }
+
+    // CHECK FOR NEW VOTES SINCE LAST UPDATED BLOCK
+    const blockNumber = await this.proposalService.getSmallestLastBlockUpdated();
+    const responseVotes = await GetNewVotes({ latestUpdatedBlock: blockNumber || 0 });
+
+    if (responseVotes.voteCasteds.length > 0) {
+      console.log(
+        `Found ${responseVotes.voteCasteds.length} new votes`,
+      );
+      const votes = responseVotes.voteCasteds;
+  
+      await this.updateVotes(votes);
+    }
+
+
+
+
+
+
+
+    console.log('Cron has ended');
 
     console.log('------------------------------------');
   }
@@ -69,9 +84,10 @@ export class TheGraphService {
             message: proposal.proposalHash,
             creationDate: proposal.creationDate,
             conclusionDate: proposal.conclusionDate,
+            concluded: false,
             yesVotes: 0,
             noVotes: 0,
-            lastBlockUpdate: 0,
+            lastBlockUpdate: proposal.blockNumber,
           };
           console.log(`New proposal: ${JSON.stringify(newProposal)}`);
           await this.proposalService.createProposal(newProposal);
@@ -90,18 +106,12 @@ export class TheGraphService {
 
   private async updateVotes(votes) {
     for (const vote of votes) {
-      if (vote.voteOption === 1) {
-        // Aquí actualizas la base de datos para añadir un voto a favor (yesVote)
-        await this.updateProposal(vote.votingProposalId, { $inc: { noVotes: 1 } });
-      } else if (vote.voteOption === 0) {
-        // Aquí actualizas la base de datos para añadir un voto en contra (noVote)
-        await this.updateProposal(vote.votingProposalId, { $inc: { yesVotes: 1 } });
+      if (vote.voteOption === 1 || vote.voteOption === 0) {
+        await this.proposalService.updateProposalVote(vote.votingProposalId, vote.voteOption, vote.blockNumber);
+      } else {
+        throw new Error('Invalid voteOption');
       }
     }
   }
   
-  async updateProposal(proposalId, update) {
-    // Aquí implementas la lógica para actualizar la propuesta en la base de datos
-    // Esta es solo una función de ejemplo, necesitarás implementarla según tu base de datos y tu ORM o driver de base de datos
-  }
 }
