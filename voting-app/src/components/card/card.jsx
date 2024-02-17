@@ -1,6 +1,6 @@
 import React from "react";
 
-import Style from "../card/card.module.css";
+import Style from "./card.module.css";
 
 const card = ({ candidateArray, giveVote }) => {
   return (
