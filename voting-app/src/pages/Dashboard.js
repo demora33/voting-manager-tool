@@ -34,9 +34,7 @@ function Dashboard() {
       .then(response => {
         console.log("---------------------------")
         console.log(response.data); // debería imprimir "hola"
-        // Aquí puedes establecer los datos en el estado local con setVotingProposals
-        // Por ejemplo:
-        // setVotingProposals(response.data);
+        setVotingProposals(response.data);
       })
       .catch(error => {
         console.error(error);
@@ -62,16 +60,16 @@ function Dashboard() {
       >
         Dashboard
       </h1>
-      {/* {votingProposals.map((proposal) => (
-        <div key={proposal.hash} style={{ marginBottom: "20px" }}>
+      {votingProposals.map((proposal) => (
+        <div key={proposal._id} style={{ marginBottom: "20px" }}>
           <Proposal
-            hash={proposal.hash}
-            totalYes={proposal.totalYes}
-            totalNo={proposal.totalNo}
-            timeRemaining={proposal.timeRemaining}
+            hash={proposal.message}
+            totalYes={proposal.yesVotes}
+            totalNo={proposal.noVotes}
+            timeRemaining={proposal.conclusionDate}
           />
         </div>
-      ))} */}
+      ))}
     </div>
   );
 }

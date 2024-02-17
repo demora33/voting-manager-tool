@@ -8,10 +8,8 @@ export class ProposalController {
   ) {}
 
   @Get()
-  async getProposals(
-    // @Param('watchlistId') watchlistId: string
-  ) {
-    return "hola";
+  async getProposals() {
+    return this.proposalService.findAllProposals();
   }
 
 //   @Post('add/:watchlistId')

@@ -1,0 +1,9 @@
+query GetProposalById($votingProposalId: BigInt!) {
+  votingProposalCreateds(where: { votingProposalId: $votingProposalId }) {
+    creator
+    creationDate
+    conclusionDate
+    proposalHash
+    votingProposalId
+  }
+}

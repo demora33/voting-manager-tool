@@ -6,6 +6,9 @@ export class Proposal {
   creator: string;
 
   @Prop({ required: true })
+  message: string;
+
+  @Prop({ required: true })
   votingProposalId: number;
 
   @Prop({ required: true })

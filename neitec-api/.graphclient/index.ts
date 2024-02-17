@@ -1121,6 +1121,12 @@ const merger = new(BareMerger as any)({
           return printWithCache(GetProposalsDocument);
         },
         location: 'GetProposalsDocument.graphql'
+      },{
+        document: GetProposalByIdDocument,
+        get rawSDL() {
+          return printWithCache(GetProposalByIdDocument);
+        },
+        location: 'GetProposalByIdDocument.graphql'
       }
     ];
     },
@@ -1164,6 +1170,13 @@ export type GetProposalsQueryVariables = Exact<{ [key: string]: never; }>;
 
 export type GetProposalsQuery = { votingProposalCreateds: Array<Pick<VotingProposalCreated, 'creator' | 'creationDate' | 'conclusionDate' | 'proposalHash' | 'votingProposalId'>> };
 
+export type GetProposalByIdQueryVariables = Exact<{
+  votingProposalId: Scalars['BigInt'];
+}>;
+
+
+export type GetProposalByIdQuery = { votingProposalCreateds: Array<Pick<VotingProposalCreated, 'creator' | 'creationDate' | 'conclusionDate' | 'proposalHash' | 'votingProposalId'>> };
+
 
 export const GetProposalsDocument = gql`
     query GetProposals {
@@ -1176,6 +1189,18 @@ export const GetProposalsDocument = gql`
   }
 }
     ` as unknown as DocumentNode<GetProposalsQuery, GetProposalsQueryVariables>;
+export const GetProposalByIdDocument = gql`
+    query GetProposalById($votingProposalId: BigInt!) {
+  votingProposalCreateds(where: {votingProposalId: $votingProposalId}) {
+    creator
+    creationDate
+    conclusionDate
+    proposalHash
+    votingProposalId
+  }
+}
+    ` as unknown as DocumentNode<GetProposalByIdQuery, GetProposalByIdQueryVariables>;
+
 
 
 export type Requester<C = {}, E = unknown> = <R, V>(doc: DocumentNode, vars?: V, options?: C) => Promise<R> | AsyncIterable<R>
@@ -1183,6 +1208,9 @@ export function getSdk<C, E>(requester: Requester<C, E>) {
   return {
     GetProposals(variables?: GetProposalsQueryVariables, options?: C): Promise<GetProposalsQuery> {
       return requester<GetProposalsQuery, GetProposalsQueryVariables>(GetProposalsDocument, variables, options) as Promise<GetProposalsQuery>;
+    },
+    GetProposalById(variables: GetProposalByIdQueryVariables, options?: C): Promise<GetProposalByIdQuery> {
+      return requester<GetProposalByIdQuery, GetProposalByIdQueryVariables>(GetProposalByIdDocument, variables, options) as Promise<GetProposalByIdQuery>;
     }
   };
 }

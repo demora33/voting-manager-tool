@@ -6,3 +6,4 @@ sources:
         endpoint: https://api.studio.thegraph.com/query/65949/voting_subgraph/v0.0.1
 documents:
   - ./query/GetProposals.gql
+  - ./query/GetProposalsById.gql
