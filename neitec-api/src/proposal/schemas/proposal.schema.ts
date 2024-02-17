@@ -3,16 +3,25 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 @Schema({ timestamps: true })
 export class Proposal {
   @Prop({ required: true })
-  address: string;
+  creator: string;
 
-  @Prop({ default: 0 })
-  balance: number;
+  @Prop({ required: true })
+  votingProposalId: number;
+
+  @Prop({ required: true })
+  creationDate: number;
+
+  @Prop({ required: true })
+  conclusionDate: number;
 
   @Prop({ default: 0 })
   lastBlockUpdate: number;
 
   @Prop({ default: 0 })
-  rewards: number;
+  yesVotes: number;
+
+  @Prop({ default: 0 })
+  noVotes: number;
 }
 
 export const ProposalSchema = SchemaFactory.createForClass(Proposal);

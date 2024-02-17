@@ -12,7 +12,6 @@ export class ProposalController {
     // @Param('watchlistId') watchlistId: string
   ) {
     return "hola";
-    // return this.proposalService.getAccountsByWatchlistId(watchlistId);
   }
 
 //   @Post('add/:watchlistId')
