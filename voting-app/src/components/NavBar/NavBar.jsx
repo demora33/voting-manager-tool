@@ -1,5 +1,6 @@
 import React, { useState, useContext } from "react";
 import { AiFillLock, AiFillUnlock } from "react-icons/ai";
+import logo from "../../neitec_company_logo.jpeg";
 
 //INTERNAL IMPORT/
 import { VotingContext } from "../../context/voter";
@@ -30,11 +31,10 @@ const NavBar = () => {
       )}
 
       <div className={Style.navbar_box}>
-        <div className={Style.title}>
-          {/* <Link href={{ pathname: "/" }}>
-            <Image src={loding} alt="logo" width={80} height={80} />
-          </Link> */}
-        </div>
+      <div className={Style.title}>
+        <img src={logo} alt="Logo" className={Style.logo} />
+        <h1>Neitec Challenge</h1>
+    </div>
         <div className={Style.connect}>
           {currentAccount ? (
             <div>
@@ -52,29 +52,6 @@ const NavBar = () => {
                   </span>
                 )}
               </div>
-
-              {/* {openNav && (
-                <div className={Style.navigation}>
-                  <p>
-                    <Link href={{ pathname: "/" }}>Home</Link>
-                  </p>
-
-                  <p>
-                    <Link href={{ pathname: "candidate-regisration" }}>
-                      Candidate Registraction
-                    </Link>
-                  </p>
-                  <p>
-                    <Link href={{ pathname: "allowed-voters" }}>
-                      Voter Registraction
-                    </Link>
-                  </p>
-
-                  <p>
-                    <Link href={{ pathname: "voterList" }}>Voter Lsit</Link>
-                  </p>
-                </div>
-              )} */}
             </div>
           ) : (
             <button onClick={() => connectWallet()}>Connect Wallet</button>

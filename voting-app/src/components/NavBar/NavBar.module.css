@@ -1,16 +1,25 @@
-
 .navbar{
     width: 100%;
     height: 5.5rem;
-    background-color: #231E39;
+    background-color: #6969d3; /* azul oscuro */
     box-shadow: 10px 10px 15px rgba(0,0,0,0.35);
     margin-bottom: 2rem;
 }
 
-.title{
-    cursor: pointer;
+.title {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
 }
 
+.title h1 {
+    font-size: 2em; /* Ajusta el tamaño según tus necesidades */
+}
+
+.logo {
+    height: 50px; /* Ajusta el tamaño según tus necesidades */
+    width: 50px; /* Ajusta el tamaño según tus necesidades */
+}
 
 .navbar_box{
     width: 80%;
@@ -18,12 +27,11 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    color: #fff;
-    
+    color: #000000; /* negro */
 }
 
 .connect{
-    background-color: #9a02ac;
+    background-color: #2285db; /* azul claro */
     padding: .5rem 2rem;
     border-radius: .2rem;
     cursor: pointer;
@@ -33,7 +41,7 @@
 
 .navigation{
     position: absolute;
-    background-color: #9a02ac;
+    background-color: #0000CC; /* azul claro */
     padding: 1rem;
     width: 15rem;
     left: 0;
@@ -41,22 +49,26 @@
     border-radius: .2rem;
     z-index: 1111111;
 }
+
 .connect button{
     background-color: transparent;
     border: 0;
     font-size: 1rem;
-    color: #fff;
+    color: #000000; /* negro */
     font-weight: 600;
     cursor: pointer;
 }
+
 .connect_flex{
     display: flex;
     justify-content: space-between;
     align-items: center;
 }
+
 .connect span{
     font-size: 2rem;
     margin-left: 1rem;
+    color: #808080; /* gris */
 }
 
 .message__Box{
@@ -64,12 +76,12 @@
     left: 50%;
     transform: translate(-50%, -50%);
     padding: 5rem 3rem;
-    background-color: #9a02ac;
+    background-color: #0000CC; /* azul claro */
     position: absolute;
     z-index: 11111;
     border-radius: 1rem;
     font-size: 2rem;
-
+    color: #000000; /* negro */
 }
 
 @media screen and (max-width: 35em) {
@@ -87,5 +99,4 @@
         padding: 2rem 1rem;
         top: 55%;
     }
-    
 }
