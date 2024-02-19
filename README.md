@@ -53,3 +53,5 @@ To contribute to this project, please fork the repository and propose your chang
 
 ## License
 This project is licensed under the terms of the MIT license.
+
+![Voting Manager Tool Snapshot](./voting_manager_snapshot.png)
