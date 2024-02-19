@@ -14,15 +14,7 @@ function MyApp({}) {
     if (!currentAccount) {
       connectWallet();
     }
-    // if (!contract && signer !== null) {
-    //   fetchContract(signer);
-    // }
   }, [currentAccount, contract]);
-
- 
-
-
-
 
   return (
     <VotingProvider>
@@ -35,6 +27,7 @@ function MyApp({}) {
             fontWeight: "bold",
             color: "#3f51b5",
             marginLeft: "10px",
+            padding: "30px",  
           }}
         >
           Voting Manager Tool by Alfonso de Mora
