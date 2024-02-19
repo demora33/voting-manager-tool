@@ -48,6 +48,10 @@ Unit tests have been written for the smart contract and for the API endpoints. C
 
 8. Follow the setup and running instructions for the smart contract, back-end service, and front-end application provided in the documentation.
 
+9. Ensure you have available balance on the Optimism Sepolia network. You can get test balance from this faucet: [https://faucet.quicknode.com/optimism/sepolia](https://faucet.quicknode.com/optimism/sepolia)
+
+10. Connect to the Optimism Sepolia network through MetaMask. You can do it directly from this link: [https://chainlist.org/chain/11155420](https://chainlist.org/chain/11155420)
+
 ## Contribution
 To contribute to this project, please fork the repository and propose your changes via a pull request.
 
