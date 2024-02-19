@@ -1,7 +1,14 @@
 # Voting Manager Tool
 
 ## Description
-Voting Manager Tool is a voting management application that leverages a Solidity smart contract, a back-end service, and a front-end application.
+Voting Manager Tool is a comprehensive, blockchain-based voting management application. It leverages the power of Solidity smart contracts, a NestJS back-end service, a React front-end application, and GraphQL for efficient data handling. This combination of technologies provides a secure, efficient, and user-friendly platform for managing and participating in voting events.
+
+## Technology Stack
+The main technology stack used in this project includes:
+- Solidity: For creating the smart contract that handles the voting mechanism.
+- NestJS: For building the back-end service that listens to events emitted by the smart contract and syncs with our database.
+- React: For developing the front-end application that displays the events from the smart contract to the users.
+- GraphQL: Used in conjunction with TheGraph for efficient querying and indexing of blockchain data.
 
 ## Features
 
