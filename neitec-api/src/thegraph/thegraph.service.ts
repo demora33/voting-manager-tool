@@ -20,6 +20,12 @@ export class TheGraphService {
     this.logger.debug('Cron has started');
     console.log('------------------------------------');
 
+    console.log(`Current date: ${new Date()}`);
+    const endDate = new Date();
+    endDate.setMinutes(endDate.getMinutes() + 5);
+    const timestamp = Math.floor(endDate.getTime() / 1000);
+    console.log(`End date: ${timestamp}`);
+
     
     // CHECK FOR NEW PROPOSALS
     const lastCreationDate = await this.proposalService.getLargestCreationDate();
@@ -57,6 +63,9 @@ export class TheGraphService {
   
       await this.updateVotes(votes);
     }
+    else {
+      console.log('No new votes found');
+    }
 
 
     // CHECK FOR CONCLUDED PROPOSALS
@@ -64,19 +73,25 @@ export class TheGraphService {
 
     if (concludedProposalsId.length > 0) {
       console.log(
-        `Found ${concludedProposalsId.length} concluded proposals`,
+        `Found ${concludedProposalsId.length} possible concluded proposals`,
       );
 
       for (const proposalId of concludedProposalsId) {
-        const responseConcludedProposals = await GetConcluded({ votingProposalId: proposalId });
+        const responseConcludedProposal = await GetConcluded({ votingProposalId: proposalId });
       
-        if (responseConcludedProposals.votingConcludeds.length > 0) {
+        if (responseConcludedProposal.votingConcludeds.length > 0) {
           console.log(
             `Found a concluded proposal for proposalId ${proposalId}`,
+            );
+            const concludedProposal = responseConcludedProposal.votingConcludeds;
+
+            await this.proposalService.concludeProposal(concludedProposal[0]);
+        }
+        else {
+          console.log(
+            `No concluded proposal found in blockchain for proposalId ${proposalId}`,
           );
-          const concludedProposals = responseConcludedProposals.votingConcludeds;
-      
-          await this.concludeProposal(concludedProposals);
+        
         }
       }
     }
@@ -147,24 +162,6 @@ export class TheGraphService {
       }
     }
   }
-
-  private async concludeProposal(proposals) {
-    for (const proposal of proposals) {
-      // if (vote.voteOption === 1 || vote.voteOption === 0) {
-      //   await this.proposalService.updateProposalVote(vote.votingProposalId, vote.voteOption, vote.blockNumber);
-      // } else {
-      //   throw new Error('Invalid voteOption');
-      // }
-      console.log("--------------------")
-      console.log('AQUI VIENEN LAS CONCLUDED PROPOSALS')
-      console.log("--------------------")
-
-      console.log(proposal)
-    }
-  }
-
-  
-
 
   
 }

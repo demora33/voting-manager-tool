@@ -29,6 +29,18 @@ export class ProposalService {
     return this.proposalModel.findOneAndUpdate({ votingProposalId }, update, { new: true }).exec();
   }
 
+  async concludeProposal(proposal: any): Promise<Proposal> {
+    const update = {
+      $set: {
+        noVotes: proposal.noVotes,
+        yesVotes: proposal.yesVotes,
+        concluded: true
+      }
+    };
+  
+    return this.proposalModel.findOneAndUpdate({ votingProposalId: proposal.votingProposalId }, update, { new: true }).exec();
+  }
+
   async findProposalById(id: number): Promise<Proposal | null> {
     return this.proposalModel.findOne({ votingProposalId: id }).exec();
   }
@@ -65,8 +77,10 @@ export class ProposalService {
   }
 
   async getConcludableProposals(): Promise<number[]> {
-    const proposals = await this.proposalModel.find({ conclusionDate: { $gt: new Date() }, concluded: false }, { votingProposalId: 1 }).exec();
+    const currentTimestampInSeconds = Math.floor(Date.now() / 1000);
+    const proposals = await this.proposalModel.find({ conclusionDate: { $lt: currentTimestampInSeconds }, concluded: false }, { votingProposalId: 1 }).exec();
     if (proposals.length === 0) {
+      console.log('No concludable proposals found');
       return [];
     }
     return proposals.map(proposal => proposal.votingProposalId);

@@ -1,29 +1,39 @@
-import React, { useState, useEffect } from "react";
-import { ethers } from "ethers";
+import React, { useState, useCallback, useContext } from "react";
 import axios from "axios";
 import { VotingAddress, VotingAddressABI } from "./config.js";
 
+const { ethers } = require("ethers");
 export const VotingContext = React.createContext();
 
 export const VotingProvider = ({ children }) => {
   const [currentAccount, setCurrentAccount] = useState(null);
   const [contract, setContract] = useState(null);
+  const [signer, setSigner] = useState(null);
+  
   const [error, setError] = useState("");
- 
-  const fetchContract = (signer) => {
+
+  const fetchContract = useCallback(() => {
     if (contract) return contract;
 
-    const contractAddress = VotingAddress;
-    const contractABI = [VotingAddressABI];
-
-    const votingManager = new ethers.Contract(
-      contractAddress,
-      contractABI,
-      signer
-    );
-    if (votingManager) setContract(votingManager);
-    return votingManager;
-  };
+    if (window.ethereum) {
+      console.log("Ethereum object found");
+      const provider = new ethers.BrowserProvider(window.ethereum);
+      const providerSigner = provider.getSigner();
+      setSigner(providerSigner);
+  
+      const contractAddress = VotingAddress;
+      const contractABI = VotingAddressABI;
+  
+      const votingManager = new ethers.Contract(
+        contractAddress,
+        contractABI,
+        providerSigner
+      );
+      setContract(votingManager);
+  
+      return votingManager;
+    }
+  }, [contract]);
 
   const checkIfWalletIsConnected = async () => {
     if (!window.ethereum) return setError("Please Install MetaMask");
@@ -54,10 +64,8 @@ export const VotingProvider = ({ children }) => {
 
   const createVotingProposal = async (proposalMessage, endDate) => {
     try {
-      const contract = fetchContract(window.ethereum);
-      // const provider = new ethers.Web3Provider(window.ethereum);
+      const contract = fetchContract();
       // console.log(provider);
-      // const providerSigner = provider.getSigner();
       // console.log(providerSigner);
       // const proposalHash = ethers.utils.keccak256(ethers.utils.toUtf8Bytes(proposalMessage));
 
@@ -69,14 +77,18 @@ export const VotingProvider = ({ children }) => {
         console.log("Contract not initialized");
         return;
       }
-  
+
+      const tx = await contract
+        .connect()
+        .createVotingProposal(proposalMessage, endDate);
+
       // Asegúrate de que la función que estás llamando existe en tu contrato
-      await contract.nextVotingProposalId();
+      // await contract.nextVotingProposalId();
       // console.log(owner);
-  
+
       // Espera a que la transacción sea minada
-      // await tx.wait();
-  
+      await tx.wait();
+
       console.log("Proposal created successfully");
     } catch (error) {
       console.log(error);
