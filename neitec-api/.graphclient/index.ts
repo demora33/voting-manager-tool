@@ -1116,6 +1116,12 @@ const merger = new(BareMerger as any)({
     get documents() {
       return [
       {
+        document: GetConcludedDocument,
+        get rawSDL() {
+          return printWithCache(GetConcludedDocument);
+        },
+        location: 'GetConcludedDocument.graphql'
+      },{
         document: GetNewVotesDocument,
         get rawSDL() {
           return printWithCache(GetNewVotesDocument);
@@ -1133,6 +1139,12 @@ const merger = new(BareMerger as any)({
           return printWithCache(GetProposalByIdDocument);
         },
         location: 'GetProposalByIdDocument.graphql'
+      },{
+        document: GetVotesByIdDocument,
+        get rawSDL() {
+          return printWithCache(GetVotesByIdDocument);
+        },
+        location: 'GetVotesByIdDocument.graphql'
       }
     ];
     },
@@ -1171,6 +1183,13 @@ export function getBuiltGraphSDK<TGlobalContext = any, TOperationContext = any>(
   const sdkRequester$ = getBuiltGraphClient().then(({ sdkRequesterFactory }) => sdkRequesterFactory(globalContext));
   return getSdk<TOperationContext, TGlobalContext>((...args) => sdkRequester$.then(sdkRequester => sdkRequester(...args)));
 }
+export type GetConcludedQueryVariables = Exact<{
+  votingProposalId: Scalars['BigInt'];
+}>;
+
+
+export type GetConcludedQuery = { votingConcludeds: Array<Pick<VotingConcluded, 'noVotes' | 'yesVotes' | 'votingProposalId' | 'blockNumber'>> };
+
 export type GetNewVotesQueryVariables = Exact<{
   latestUpdatedBlock: Scalars['BigInt'];
 }>;
@@ -1178,7 +1197,9 @@ export type GetNewVotesQueryVariables = Exact<{
 
 export type GetNewVotesQuery = { voteCasteds: Array<Pick<VoteCasted, 'voteOption' | 'votingProposalId' | 'blockNumber'>> };
 
-export type GetProposalsQueryVariables = Exact<{ [key: string]: never; }>;
+export type GetProposalsQueryVariables = Exact<{
+  lastCreationDate: Scalars['BigInt'];
+}>;
 
 
 export type GetProposalsQuery = { votingProposalCreateds: Array<Pick<VotingProposalCreated, 'creator' | 'creationDate' | 'conclusionDate' | 'proposalHash' | 'votingProposalId' | 'blockNumber'>> };
@@ -1190,7 +1211,24 @@ export type GetProposalByIdQueryVariables = Exact<{
 
 export type GetProposalByIdQuery = { votingProposalCreateds: Array<Pick<VotingProposalCreated, 'creator' | 'creationDate' | 'conclusionDate' | 'proposalHash' | 'votingProposalId' | 'blockNumber'>> };
 
+export type GetVotesByIdQueryVariables = Exact<{
+  votingProposalId: Scalars['BigInt'];
+}>;
 
+
+export type GetVotesByIdQuery = { voteCasteds: Array<Pick<VoteCasted, 'id'>> };
+
+
+export const GetConcludedDocument = gql`
+    query GetConcluded($votingProposalId: BigInt!) {
+  votingConcludeds(where: {votingProposalId: $votingProposalId}) {
+    noVotes
+    yesVotes
+    votingProposalId
+    blockNumber
+  }
+}
+    ` as unknown as DocumentNode<GetConcludedQuery, GetConcludedQueryVariables>;
 export const GetNewVotesDocument = gql`
     query GetNewVotes($latestUpdatedBlock: BigInt!) {
   voteCasteds(where: {blockNumber_gt: $latestUpdatedBlock}) {
@@ -1201,8 +1239,11 @@ export const GetNewVotesDocument = gql`
 }
     ` as unknown as DocumentNode<GetNewVotesQuery, GetNewVotesQueryVariables>;
 export const GetProposalsDocument = gql`
-    query GetProposals {
-  votingProposalCreateds(first: 10, where: {}, orderBy: votingProposalId) {
+    query GetProposals($lastCreationDate: BigInt!) {
+  votingProposalCreateds(
+    where: {creationDate_gt: $lastCreationDate}
+    orderBy: votingProposalId
+  ) {
     creator
     creationDate
     conclusionDate
@@ -1224,6 +1265,15 @@ export const GetProposalByIdDocument = gql`
   }
 }
     ` as unknown as DocumentNode<GetProposalByIdQuery, GetProposalByIdQueryVariables>;
+export const GetVotesByIdDocument = gql`
+    query GetVotesById($votingProposalId: BigInt!) {
+  voteCasteds(where: {votingProposalId: $votingProposalId}) {
+    id
+  }
+}
+    ` as unknown as DocumentNode<GetVotesByIdQuery, GetVotesByIdQueryVariables>;
+
+
 
 
 
@@ -1231,14 +1281,20 @@ export const GetProposalByIdDocument = gql`
 export type Requester<C = {}, E = unknown> = <R, V>(doc: DocumentNode, vars?: V, options?: C) => Promise<R> | AsyncIterable<R>
 export function getSdk<C, E>(requester: Requester<C, E>) {
   return {
+    GetConcluded(variables: GetConcludedQueryVariables, options?: C): Promise<GetConcludedQuery> {
+      return requester<GetConcludedQuery, GetConcludedQueryVariables>(GetConcludedDocument, variables, options) as Promise<GetConcludedQuery>;
+    },
     GetNewVotes(variables: GetNewVotesQueryVariables, options?: C): Promise<GetNewVotesQuery> {
       return requester<GetNewVotesQuery, GetNewVotesQueryVariables>(GetNewVotesDocument, variables, options) as Promise<GetNewVotesQuery>;
     },
-    GetProposals(variables?: GetProposalsQueryVariables, options?: C): Promise<GetProposalsQuery> {
+    GetProposals(variables: GetProposalsQueryVariables, options?: C): Promise<GetProposalsQuery> {
       return requester<GetProposalsQuery, GetProposalsQueryVariables>(GetProposalsDocument, variables, options) as Promise<GetProposalsQuery>;
     },
     GetProposalById(variables: GetProposalByIdQueryVariables, options?: C): Promise<GetProposalByIdQuery> {
       return requester<GetProposalByIdQuery, GetProposalByIdQueryVariables>(GetProposalByIdDocument, variables, options) as Promise<GetProposalByIdQuery>;
+    },
+    GetVotesById(variables: GetVotesByIdQueryVariables, options?: C): Promise<GetVotesByIdQuery> {
+      return requester<GetVotesByIdQuery, GetVotesByIdQueryVariables>(GetVotesByIdDocument, variables, options) as Promise<GetVotesByIdQuery>;
     }
   };
 }

@@ -8,4 +8,8 @@ documents:
   - ./query/GetProposals.gql
   - ./query/GetProposalsById.gql
   - ./query/GetNewVotes.gql
+  - ./query/GetConcluded.gql
+  - ./query/GetVotesById.gql
+
+
 

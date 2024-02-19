@@ -6,7 +6,7 @@ import { ethers } from 'ethers';
 import { Proposal } from 'src/proposal/schemas/proposal.schema';
 require('dotenv').config();
 
-const { GetProposals, GetProposalById, GetNewVotes } = getBuiltGraphSDK();
+const { GetProposals, GetProposalById, GetNewVotes, GetConcluded, GetVotesById } = getBuiltGraphSDK();
 
 @Injectable()
 export class TheGraphService {
@@ -15,14 +15,16 @@ export class TheGraphService {
   constructor(private proposalService: ProposalService) {
   }
 
-  @Cron(CronExpression.EVERY_5_MINUTES)
+  @Cron(CronExpression.EVERY_30_SECONDS)
   async handleCron() {
     this.logger.debug('Cron has started');
     console.log('------------------------------------');
 
-
+    
     // CHECK FOR NEW PROPOSALS
-    const response = await GetProposals();
+    const lastCreationDate = await this.proposalService.getLargestCreationDate();
+    console.log(`Last creation date: ${lastCreationDate}`);
+    const response = await GetProposals({ lastCreationDate: lastCreationDate});
     const proposals = response.votingProposalCreateds;
 
     if (proposals.length > 0) {
@@ -37,24 +39,47 @@ export class TheGraphService {
       console.log('No proposals found');
     }
 
+    
     // CHECK FOR NEW VOTES SINCE LAST UPDATED BLOCK
-    const blockNumber = await this.proposalService.getSmallestLastBlockUpdated();
-    const responseVotes = await GetNewVotes({ latestUpdatedBlock: blockNumber || 0 });
+    const blockNumber = await this.proposalService.getLargestLastBlockUpdated();
+    console.log(`Block number: ${blockNumber}`);
+
+
+    const responseVotes = await GetNewVotes({ latestUpdatedBlock: blockNumber });
 
     if (responseVotes.voteCasteds.length > 0) {
       console.log(
         `Found ${responseVotes.voteCasteds.length} new votes`,
       );
       const votes = responseVotes.voteCasteds;
+
+      console.log(votes);
   
       await this.updateVotes(votes);
     }
 
 
+    // CHECK FOR CONCLUDED PROPOSALS
+    const concludedProposalsId = await this.proposalService.getConcludableProposals();
 
+    if (concludedProposalsId.length > 0) {
+      console.log(
+        `Found ${concludedProposalsId.length} concluded proposals`,
+      );
 
-
-
+      for (const proposalId of concludedProposalsId) {
+        const responseConcludedProposals = await GetConcluded({ votingProposalId: proposalId });
+      
+        if (responseConcludedProposals.votingConcludeds.length > 0) {
+          console.log(
+            `Found a concluded proposal for proposalId ${proposalId}`,
+          );
+          const concludedProposals = responseConcludedProposals.votingConcludeds;
+      
+          await this.concludeProposal(concludedProposals);
+        }
+      }
+    }
 
     console.log('Cron has ended');
 
@@ -87,7 +112,7 @@ export class TheGraphService {
             concluded: false,
             yesVotes: 0,
             noVotes: 0,
-            lastBlockUpdate: proposal.blockNumber,
+            lastBlockUpdate: 0,
           };
           console.log(`New proposal: ${JSON.stringify(newProposal)}`);
           await this.proposalService.createProposal(newProposal);
@@ -105,7 +130,16 @@ export class TheGraphService {
   }
 
   private async updateVotes(votes) {
+    
     for (const vote of votes) {
+      const totalVotesInBc = await GetVotesById({ votingProposalId: vote.votingProposalId });
+      const totalVotesInDb = await this.proposalService.getTotalVotesByProposalId(vote.votingProposalId);
+
+      if (totalVotesInBc.voteCasteds.length == totalVotesInDb) {
+        console.log('No new votes');
+        continue;
+      }
+      
       if (vote.voteOption === 1 || vote.voteOption === 0) {
         await this.proposalService.updateProposalVote(vote.votingProposalId, vote.voteOption, vote.blockNumber);
       } else {
@@ -113,5 +147,24 @@ export class TheGraphService {
       }
     }
   }
+
+  private async concludeProposal(proposals) {
+    for (const proposal of proposals) {
+      // if (vote.voteOption === 1 || vote.voteOption === 0) {
+      //   await this.proposalService.updateProposalVote(vote.votingProposalId, vote.voteOption, vote.blockNumber);
+      // } else {
+      //   throw new Error('Invalid voteOption');
+      // }
+      console.log("--------------------")
+      console.log('AQUI VIENEN LAS CONCLUDED PROPOSALS')
+      console.log("--------------------")
+
+      console.log(proposal)
+    }
+  }
+
+  
+
+
   
 }

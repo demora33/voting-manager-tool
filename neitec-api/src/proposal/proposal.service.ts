@@ -37,12 +37,38 @@ export class ProposalService {
     return this.proposalModel.find().exec();
   }
 
-  async getSmallestLastBlockUpdated(): Promise<number> {
-    const proposal = await this.proposalModel.find({}, { lastBlockUpdate: 1 }).sort({ lastBlockUpdate: 1 }).limit(1).exec();
+  async getLargestLastBlockUpdated(): Promise<number> {
+    const proposal = await this.proposalModel.find({}, { lastBlockUpdate: 1 }).sort({ lastBlockUpdate: -1 }).limit(1).exec();
     if (proposal.length > 0) {
       return proposal[0].lastBlockUpdate;
     } else {
-      throw new Error('No proposals found');
+      return 0;
     }
+  }
+
+  async getLargestCreationDate(): Promise<number> {
+    const proposal = await this.proposalModel.find({}, { creationDate: 1 }).sort({ creationDate: -1 }).limit(1).exec();
+    if (proposal.length > 0) {
+      return proposal[0].creationDate;
+    } else {
+      return 0;
+    }
+  }
+
+  async getTotalVotesByProposalId(votingProposalId: number): Promise<number> {
+    const proposal = await this.proposalModel.findOne({ votingProposalId }).exec();
+    if (proposal) {
+      return proposal.yesVotes + proposal.noVotes;
+    } else {
+      throw new Error('No proposal found with the provided id');
+    }
+  }
+
+  async getConcludableProposals(): Promise<number[]> {
+    const proposals = await this.proposalModel.find({ conclusionDate: { $gt: new Date() }, concluded: false }, { votingProposalId: 1 }).exec();
+    if (proposals.length === 0) {
+      return [];
+    }
+    return proposals.map(proposal => proposal.votingProposalId);
   }
 }
