@@ -1,0 +1,38 @@
+specVersion: 1.0.0
+indexerHints:
+  prune: auto
+schema:
+  file: ./schema.graphql
+dataSources:
+  - kind: ethereum
+    name: VotingManager
+    network: optimism-sepolia
+    source:
+      address: "0xa78BC9891c7f9d2e6f801E1693CeFafff7FDD208"
+      abi: VotingManager
+      startBlock: 0
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      entities:
+        - Initialized
+        - OwnershipTransferred
+        - VoteCasted
+        - VotingConcluded
+        - VotingProposalCreated
+      abis:
+        - name: VotingManager
+          file: ./abis/VotingManager.json
+      eventHandlers:
+        - event: Initialized(uint64)
+          handler: handleInitialized
+        - event: OwnershipTransferred(indexed address,indexed address)
+          handler: handleOwnershipTransferred
+        - event: VoteCasted(uint256,uint8,uint256)
+          handler: handleVoteCasted
+        - event: VotingConcluded(uint256,uint256,uint256)
+          handler: handleVotingConcluded
+        - event: VotingProposalCreated(uint256,address,bytes32,uint256,uint256)
+          handler: handleVotingProposalCreated
+      file: ./src/voting-manager.ts

@@ -3,6 +3,7 @@ pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol";
 
 /**
  * @title VotingManager
@@ -52,6 +53,7 @@ contract VotingManager is Initializable, OwnableUpgradeable {
      */
     function initialize() initializer public {
         __Ownable_init(msg.sender);
+        __ReentrancyGuard_init();
         nextVotingProposalId = 0;
     }
 
@@ -59,6 +61,7 @@ contract VotingManager is Initializable, OwnableUpgradeable {
      * @dev Creates a new voting proposal.
      */
     function createVotingProposal(bytes32 proposalHash, uint256 endDate) public {
+        require(endDate > block.timestamp, "End date must be in the future.");
         uint256 votingProposalId = nextVotingProposalId;
     
         VotingProposal storage newProposal = votingProposals[votingProposalId];
@@ -77,7 +80,8 @@ contract VotingManager is Initializable, OwnableUpgradeable {
     /**
      * @dev Casts a vote for a proposal.
      */
-    function castVote(uint256 votingProposalId, VoteOption voteOption) public {
+    function castVote(uint256 votingProposalId, VoteOption voteOption) public nonReentrant{
+        require(!votingProposals[votingProposalId].creationDate > block.timestamp, "This proposal has not been created yet.");
         require(!votingProposals[votingProposalId].concluded, "Voting has already concluded.");
         require(!getHasVoted(votingProposalId, msg.sender), "You have already voted.");
         hasVoted[votingProposalId][msg.sender] = true;

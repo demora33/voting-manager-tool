@@ -1,0 +1,10 @@
+query GetProposals ($lastCreationDate: BigInt!){
+  votingProposalCreateds(where: { creationDate_gt: $lastCreationDate }, orderBy: votingProposalId) {
+    creator
+    creationDate
+    conclusionDate
+    proposalHash
+    votingProposalId
+    blockNumber
+  }
+}

@@ -1,0 +1,8 @@
+query GetConcluded($votingProposalId: BigInt!) {
+  votingConcludeds(where: { votingProposalId: $votingProposalId }) {
+    noVotes
+    yesVotes
+    votingProposalId
+    blockNumber
+  }
+}

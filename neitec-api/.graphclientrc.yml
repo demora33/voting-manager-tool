@@ -1,0 +1,15 @@
+# .graphclientrc.yml
+sources:
+  - name: voting_subgraph
+    handler:
+      graphql:
+        endpoint: https://api.studio.thegraph.com/query/65949/voting_subgraph/v0.0.1
+documents:
+  - ./query/GetProposals.gql
+  - ./query/GetProposalsById.gql
+  - ./query/GetNewVotes.gql
+  - ./query/GetConcluded.gql
+  - ./query/GetVotesById.gql
+
+
+

@@ -1,0 +1,5 @@
+query GetVotesById($votingProposalId: BigInt!) {
+  voteCasteds(where: { votingProposalId: $votingProposalId }) {
+    id
+  }
+}
