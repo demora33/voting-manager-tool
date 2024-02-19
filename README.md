@@ -22,16 +22,23 @@ Unit tests have been written for the smart contract and for the API endpoints. C
 
 ## Installation and Running Guide
 1. Clone the GitHub repository.
+
 2. Navigate to the `neitec api` folder and create a `.env` file with the following environment variables:
     ```
-    GRAPHQL_API_URL="your api url"
+    GRAPHQL_API_URL="your subgraph api url"
     MONGODB_URI="your mongodb uri"
     ```
+
 3. Run `npm install` to install all dependencies.
+
 4. Run `npm run start` to start the back-end service. Once this is done, our backend will be running, listening to events on the blockchain and syncing our MongoDB database as necessary.
+
 5. Open another console, navigate to the `voting-app` folder.
+
 6. Run `npm install` to install all dependencies.
+
 7. Run `npm run start` to start the front-end application.
+
 8. Follow the setup and running instructions for the smart contract, back-end service, and front-end application provided in the documentation.
 
 ## Contribution
