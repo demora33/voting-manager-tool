@@ -64,13 +64,9 @@ export const VotingProvider = ({ children }) => {
         return;
       }
       const contractWithSigner = contract.connect(signer);
-
-      // Transforma proposalMessage en bytes32 utilizando keccak256
       const proposalMessageHash = ethers.keccak256(
         ethers.toUtf8Bytes(proposalMessage)
       );
-
-      // Transforma la fecha en un uint256 timestamp
       const endDateTimestamp = Math.floor(new Date(endDate).getTime() / 1000);
 
       const tx = await contractWithSigner.createVotingProposal(
