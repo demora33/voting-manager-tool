@@ -9,14 +9,20 @@ import CreateProposalForm from "./pages/ProposalForm";
 
 function MyApp({}) {
   const votingContext = useContext(VotingContext);
-  const { currentAccount, checkIfWalletIsConnected, fetchContract, contract } = votingContext;
-
+  const { currentAccount, connectWallet, fetchContract, contract, signer } = votingContext;
   useEffect(() => {
-    checkIfWalletIsConnected();
-    if (window.ethereum) {
-      fetchContract(window.ethereum);
+    if (!currentAccount) {
+      connectWallet();
     }
-  }, []);
+    // if (!contract && signer !== null) {
+    //   fetchContract(signer);
+    // }
+  }, [currentAccount, contract]);
+
+ 
+
+
+
 
   return (
     <VotingProvider>
@@ -45,7 +51,7 @@ function MyApp({}) {
               top: "10px",
             }}
           >
-            <CreateProposalForm />
+            {signer && contract && <CreateProposalForm />}
           </div>
         </div>
       </div>

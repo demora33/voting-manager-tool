@@ -81,6 +81,7 @@ contract VotingManager is Initializable, OwnableUpgradeable {
      * @dev Casts a vote for a proposal.
      */
     function castVote(uint256 votingProposalId, VoteOption voteOption) public nonReentrant{
+        require(!votingProposals[votingProposalId].creationDate > block.timestamp, "This proposal has not been created yet.");
         require(!votingProposals[votingProposalId].concluded, "Voting has already concluded.");
         require(!getHasVoted(votingProposalId, msg.sender), "You have already voted.");
         hasVoted[votingProposalId][msg.sender] = true;

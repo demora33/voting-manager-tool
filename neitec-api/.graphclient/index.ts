@@ -1231,7 +1231,9 @@ export const GetConcludedDocument = gql`
     ` as unknown as DocumentNode<GetConcludedQuery, GetConcludedQueryVariables>;
 export const GetNewVotesDocument = gql`
     query GetNewVotes($latestUpdatedBlock: BigInt!) {
-  voteCasteds(where: {blockNumber_gt: $latestUpdatedBlock}) {
+  voteCasteds(
+    where: {blockNumber_gt: $latestUpdatedBlock, votingProposalId_lt: 1000}
+  ) {
     voteOption
     votingProposalId
     blockNumber

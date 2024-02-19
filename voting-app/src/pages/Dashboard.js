@@ -5,36 +5,17 @@ import apiClient from '../api';
 console.log(apiClient);
 
 function Dashboard() {
-  // const { votingProposals } = useContext(VotingContext);
 
-  // const votingProposals = [
-  //   {
-  //     hash: "0x123",
-  //     totalYes: 100,
-  //     totalNo: 50,
-  //     timeRemaining: "2 days",
-  //   },
-  //   {
-  //     hash: "0x456",
-  //     totalYes: 200,
-  //     totalNo: 100,
-  //     timeRemaining: "3 days",
-  //   },
-  //   {
-  //     hash: "0x789",
-  //     totalYes: 150,
-  //     totalNo: 75,
-  //     timeRemaining: "1 day",
-  //   },
-  // ];
   const [votingProposals, setVotingProposals] = useState([]);
 
   useEffect(() => {
     apiClient.get('/proposal')
       .then(response => {
         console.log("---------------------------")
-        console.log(response.data); // debería imprimir "hola"
-        setVotingProposals(response.data);
+        console.log(response.data);
+        const notConcludedProposals = response.data.filter(proposal => !proposal.isConcluded);
+        notConcludedProposals.sort((a, b) => b.votingProposalId - a.votingProposalId); // Ordenar por votingProposalId en orden descendente
+        setVotingProposals(notConcludedProposals);
       })
       .catch(error => {
         console.error(error);
@@ -67,6 +48,7 @@ function Dashboard() {
             totalYes={proposal.yesVotes}
             totalNo={proposal.noVotes}
             timeRemaining={proposal.conclusionDate}
+            votingProposalId={proposal.votingProposalId}
           />
         </div>
       ))}
