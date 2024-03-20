@@ -395,4 +395,5 @@ describe("VotingManager", function () {
             }
         });
     });
+
 });
